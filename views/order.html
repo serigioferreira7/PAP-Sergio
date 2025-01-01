@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Realizar Encomenda</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+    }
+
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #5636d3;
+      padding: 20px;
+      color: white;
+    }
+
+    .header-title {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .header-nav a {
+      text-decoration: none;
+      padding: 10px 20px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: white;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #007bff, #8a52ff);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .header-nav a:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .order-container {
+      margin: 20px auto;
+      width: 90%;
+      max-width: 700px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .order-container h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .product-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .product-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .product-list label {
+      flex-grow: 1;
+    }
+
+    .form-group {
+      margin-top: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group input, .form-group button {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .form-group button {
+      font-weight: bold;
+      color: white;
+      background-color: #5636d3;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .form-group button:hover {
+      background-color: #6c42f5;
+    }
+
+    .total-container {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .total-container span {
+      font-weight: bold;
+      color: #007bff;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1 class="header-title">Realizar Encomenda</h1>
+    <nav class="header-nav">
+      <a href="/index.html">Página Inicial</a>
+      <a href="/products.html">Ver Produtos</a>
+    </nav>
+  </header>
+  <div class="order-container">
+    <h2>Escolha seus Produtos</h2>
+    <ul id="product-list" class="product-list">
+      <li>Carregando produtos...</li>
+    </ul>
+    <div class="total-container">
+      Valor Total: €<span id="total-value">0.00</span>
+    </div>
+    <div class="form-group">
+      <label for="delivery-date">Data de Entrega</label>
+      <input type="date" id="delivery-date" required>
+    </div>
+    <div class="form-group">
+      <button id="confirm-order">Confirmar Encomenda</button>
+    </div>
+  </div>
+
+  <script>
+    let productsData = [];
+    const productList = document.getElementById('product-list');
+    const totalValueSpan = document.getElementById('total-value');
+
+    // Carregar os produtos
+    async function loadProducts() {
+  try {
+    const response = await fetch('/api/products');
+    if (!response.ok) {
+      throw new Error('Erro ao carregar produtos.');
+    }
+
+    productsData = await response.json();
+    console.log("Dados dos produtos recebidos:", productsData); 
+
+
+    if (!Array.isArray(productsData)) {
+      throw new Error('Formato de dados inválido. Esperado um array.');
+    }
+
+    productList.innerHTML = '';
+    productsData.forEach(product => {
+      console.log("Produto a ser processado:", product); // Debug: Produto atual
+
+      const li = document.createElement('li');
+      const label = document.createElement('label');
+      label.textContent = `${product.productName} - €${product.value}`;
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.value = product.value;
+      checkbox.setAttribute('data-id', product.id); // Guarda o ID no data-id
+      checkbox.addEventListener('change', updateTotalValue);
+
+      li.appendChild(label);
+      li.appendChild(checkbox);
+      productList.appendChild(li);
+    });
+
+  } catch (error) {
+    console.error("Erro ao carregar produtos:", error);
+    productList.innerHTML = '<li>Erro ao carregar produtos. Tente novamente mais tarde.</li>';
+  }
+}
+
+
+    // Atualizar o valor total
+    function updateTotalValue() {
+      const selectedCheckboxes = document.querySelectorAll('.product-list input:checked');
+      let totalValue = 0;
+      selectedCheckboxes.forEach(checkbox => {
+        totalValue += parseFloat(checkbox.value);
+      });
+      totalValueSpan.textContent = totalValue.toFixed(2);
+    }
+
+    // Confirmar encomenda
+    document.getElementById('confirm-order').addEventListener('click', async () => {
+      const selectedProducts = Array.from(document.querySelectorAll('.product-list input:checked')).map(checkbox => ({
+        id: parseInt(checkbox.getAttribute('data-id')), // Captura o ID do data-id
+        value: parseFloat(checkbox.value),
+      }));
+      const deliveryDate = document.getElementById('delivery-date').value;
+
+      if (selectedProducts.length === 0 || !deliveryDate) {
+        alert('Por favor, selecione pelo menos um produto e uma data de entrega.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ products: selectedProducts, deliveryDate }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao realizar a encomenda.');
+        }
+
+        const orderDetails = await response.json();
+        localStorage.setItem('orderConfirmation', JSON.stringify(orderDetails));
+        window.location.href = '/order-confirmation.html';
+      } catch (error) {
+        alert('Erro ao realizar a encomenda. Tente novamente.');
+        console.error(error);
+      }
+    });
+
+    window.onload = loadProducts;
+  </script>
+</body>
+</html>

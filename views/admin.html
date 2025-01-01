@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administração</title>
+  <style>
+    /* Estilo geral */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(90deg, #4b6cb7, #182848);
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-top: 20px;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+
+    /* Botões */
+    .button-group {
+      margin: 20px auto;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .button-group a {
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #007bff, #8a52ff);
+      color: white;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .button-group a:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Administração</h1>
+    <p>Bem-vindo à área de administração. Aqui pode gerir produtos, encomendas e utilizadores de forma fácil e eficiente.</p>
+
+    <div class="button-group">
+      <a href="/add-product.html">Adicionar Produto</a>
+      <a href="/edit-product.html">Editar Produto</a>
+      <a href="/remove-product.html">Remover Produto</a>
+      <a href="/view-orders.html">Visualizar Encomendas</a>
+      <a href="/manage-users.html">Gerir Utilizadores</a>
+    </div>
+
+    <div class="button-group">
+      <a href="/index.html" style="background: linear-gradient(90deg, #28a745, #38d9a9);">Página Inicial</a>
+      <a href="/products.html" style="background: linear-gradient(90deg, #28a745, #38d9a9);">Produtos</a>
+    </div>
+  </div>
+</body>
+</html>

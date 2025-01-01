@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Produtos</title>
+  <style>
+
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center; 
+      background-color: #5636d3;
+      padding: 20px;
+      color: white;
+    }
+
+    .header-title {
+      font-size: 2rem; 
+      margin-bottom: 10px;
+    }
+
+    
+    .header-nav {
+      display: flex;
+      gap: 15px; 
+      margin-top: 10px;
+    }
+
+    .header-nav a {
+      text-decoration: none;
+      padding: 10px 20px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: white;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #007bff, #8a52ff);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .header-nav a:hover {
+      transform: scale(1.1); 
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    
+    .products {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .products h2 {
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    .product-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .product-list li {
+      font-size: 1.2rem;
+      margin: 10px 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1 class="header-title">Lista de Produtos</h1>
+    <nav class="header-nav">
+      <a href="/index.html">Página Inicial</a>
+      <a href="/order.html">Realize a sua encomenda</a>
+    </nav>
+  </header>
+  <section class="product">
+    <h2>Produtos Disponíveis</h2>
+    <ul id="product-list" class="product-list"></ul>
+  </section>
+
+  <script>
+    async function loadProducts() {
+  const productList = document.getElementById("product-list");
+  try {
+    console.log('Buscando produtos...');
+    const response = await fetch('/api/products'); 
+    console.log(`Status da resposta: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Erro ao carregar produtos: ${response.status}`);
+    }
+    const products = await response.json();
+    console.log('Produtos carregados:', products);
+
+    productList.innerHTML = '';
+    if (products.length === 0) {
+      productList.innerHTML = '<li>Nenhum produto disponível no momento.</li>';
+      return;
+    }
+
+    products.forEach(product => {
+      const li = document.createElement("li");
+      li.textContent = `${product.nome || product.productName} - €${product.preco || product.value}`;
+      productList.appendChild(li);
+    });
+  } catch (error) {
+    console.error(error);
+    productList.innerHTML = "<li>Erro ao carregar produtos. Tente novamente mais tarde.</li>";
+  }
+}
+
+
+    window.onload = loadProducts;
+  </script>
+</body>
+</html>
