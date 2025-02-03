@@ -1,11 +1,10 @@
-// routes/admin.js
 const express = require('express');
 const router = express.Router();
-const Admin = require('../models/administrator');  // Certifique-se de que o caminho está correto
+const Admin = require('../models/administrator');  
 
-// Alterando a rota para procurar pelo nome
+// Altera a rota para procurar pelo nome
 router.post('/api/admin/login', (req, res) => {
-  const { name, pass } = req.body;  // Pega o nome e a senha do corpo da requisição
+  const { name, pass } = req.body;  // Pega o nome e a pass do corpo da requisição
 
   // Verifica se o administrador existe pelo nome
   Admin.findOneByName(name, (err, admin) => {
@@ -18,7 +17,7 @@ router.post('/api/admin/login', (req, res) => {
       return res.status(404).json({ error: 'Administrador não encontrado' });
     }
 
-    // Comparar a senha armazenada (se estiver usando bcrypt)
+    // Compara a pass armazenada (se estiver usando bcrypt)
     bcrypt.compare(pass, admin.pass, (err, isMatch) => {
       if (err) {
         console.error('Erro ao comparar senha:', err);

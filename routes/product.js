@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/products - Adicionar um novo produto
+
 // POST /api/products - Adicionar um novo produto
 router.post('/', async (req, res) => {
   try {

@@ -150,7 +150,6 @@
       font-size: 2rem;
       font-weight: bold;
     }
-    /* Seção de Gestão de Produtos */
     .products-section {
       margin-top: 3rem;
     }
@@ -177,11 +176,22 @@
     .table-product {
       color: #ffffff;
       margin-top: 1rem;
+      width: 100%;
     }
-    .table-product th, .table-product td {
+    .table-product th,
+    .table-product td {
       text-align: center;
       vertical-align: middle;
+      padding: 0.8rem;
     }
+    /* Restringe a largura do campo de URL da imagem */
+    td.product-img {
+      max-width: 200px;
+      word-break: break-all;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Ajusta o cursor para edição de conteúdo */
     td.product-name,
     td.product-value,
     td.product-img {
@@ -190,6 +200,10 @@
     @media (max-width: 768px) {
       .dashboard-stats {
         grid-template-columns: 1fr;
+      }
+      .product-form input {
+        width: 100%;
+        margin-bottom: 0.5rem;
       }
     }
   </style>
@@ -228,10 +242,7 @@
         <div class="stat-title">Encomendas Pendentes</div>
         <div class="stat-value" id="pendingOrdersCount">0</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-title">Encomendas Hoje</div>
-        <div class="stat-value" id="todayOrdersCount">0</div>
-      </div>
+
       <div class="stat-card">
         <div class="stat-title">Total de Encomendas</div>
         <div class="stat-value" id="totalOrdersCount">0</div>
@@ -250,15 +261,12 @@
           </tr>
         </thead>
         <tbody id="ordersTableBody">
-          <!-- As encomendas serão inseridas aqui -->
         </tbody>
       </table>
     </div>
 
-    <!-- Seção de Gestão de Produtos -->
     <div class="products-section">
       <h3 class="mb-4">Gestão de Produtos</h3>
-      <!-- Formulário para criar um novo produto -->
       <div class="product-form">
         <input type="text" id="newProductName" placeholder="Nome do Produto" class="form-control d-inline-block">
         <input type="number" id="newProductValue" placeholder="Preço" class="form-control d-inline-block" style="width:150px;">
@@ -267,8 +275,7 @@
           <i class="fas fa-plus"></i> Criar Produto
         </button>
       </div>
-      <!-- Tabela de Produtos -->
-      <table class="table table-product table-bordered">
+      <table class="table table-product table-striped table-hover table-bordered">
         <thead>
           <tr>
             <th>ID</th>
@@ -279,7 +286,6 @@
           </tr>
         </thead>
         <tbody id="productsTableBody">
-          <!-- Produtos serão carregados aqui -->
         </tbody>
       </table>
     </div>
@@ -327,20 +333,6 @@
         pendingOrdersCount.textContent = pendingCount;
         todayOrdersCount.textContent = todayCount;
         totalOrdersCount.textContent = orders.length;
-
-        // Adiciona os eventos para os botões de confirmar e cancelar
-        document.querySelectorAll('.confirm-btn').forEach(button => {
-          button.addEventListener('click', (e) => {
-            const orderId = e.target.closest('button').dataset.id;
-            changeOrderStatus(orderId, 'Confirmada');
-          });
-        });
-        document.querySelectorAll('.cancel-btn').forEach(button => {
-          button.addEventListener('click', (e) => {
-            const orderId = e.target.closest('button').dataset.id;
-            changeOrderStatus(orderId, 'Cancelada');
-          });
-        });
       } catch (error) {
         console.error('Erro ao buscar encomendas:', error);
       }
@@ -349,25 +341,22 @@
     // Função para alterar o estado da encomenda
     async function changeOrderStatus(orderId, newStatus) {
       try {
-        const response = await fetch(`http://localhost:3000/api/orders/${orderId}/status`, {
-          method: 'PATCH',
+        const response = await fetch(`/api/orders/${orderId}/status`, {
+          method: "PUT",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ status: newStatus })
+          body: JSON.stringify({ status: newStatus }),
         });
-        if (!response.ok) {
-          throw new Error('Erro ao atualizar estado');
-        }
         const data = await response.json();
-        if (data.success) {
-          alert(`Encomenda #${orderId} foi ${newStatus}`);
-          fetchOrders();
+        if (response.ok) {
+          console.log("Status atualizado:", data);
+          fetchOrders(); // Recarrega a lista de encomendas
         } else {
-          alert('Erro ao atualizar estado da encomenda');
+          console.error("Erro ao atualizar:", data.error);
         }
       } catch (error) {
-        console.error('Erro ao alterar estado da encomenda:', error);
+        console.error("Erro na requisição:", error);
       }
     }
 
@@ -379,7 +368,6 @@
           throw new Error('Erro ao buscar produtos');
         }
         const data = await response.json();
-        // Caso a API retorne os produtos dentro de uma propriedade "products"
         const products = data.products || data;
         const productsTableBody = document.getElementById('productsTableBody');
         productsTableBody.innerHTML = '';
@@ -401,20 +389,20 @@
           `;
           productsTableBody.appendChild(row);
         });
-        // Eventos para editar produtos
+        // Event para editar produtos
         document.querySelectorAll('.edit-btn').forEach(btn => {
           btn.addEventListener('click', async function() {
             const productId = this.dataset.productId;
             const tdName = document.querySelector(`td.product-name[data-product-id="${productId}"]`);
             const tdValue = document.querySelector(`td.product-value[data-product-id="${productId}"]`);
             const tdImg = document.querySelector(`td.product-img[data-product-id="${productId}"]`);
-            const newName = tdName.textContent.trim();
-            const newValue = parseFloat(tdValue.textContent.trim());
-            const newImg = tdImg.textContent.trim();
+            const newName = tdName.innerText.trim();
+            const newValue = parseFloat(tdValue.innerText.trim());
+            const newImg = tdImg.innerText.trim();
             await updateProduct(productId, newName, newValue, newImg);
           });
         });
-        // Eventos para remover produtos
+        // Event para remover produtos
         document.querySelectorAll('.delete-btn').forEach(btn => {
           btn.addEventListener('click', async function() {
             const productId = this.dataset.productId;
@@ -428,64 +416,54 @@
 
     // Função para criar um novo produto com tratamento para valores decimais
     async function createProduct() {
-  const newProductNameInput = document.getElementById('newProductName');
-  const newProductValueInput = document.getElementById('newProductValue');
-  const newProductImageInput = document.getElementById('newProductImage');
-
-  const productName = newProductNameInput.value.trim();
-  const valueStr = newProductValueInput.value.trim().replace(',', '.');
-  const value = parseFloat(valueStr);
-  const img = newProductImageInput.value.trim();
-
-  if (!productName || isNaN(value)) {
-    alert('Por favor, insira um nome válido e um preço numérico.');
-    return;
-  }
-
-  const idCategory = 1; 
-  const active = true;
-  const reference = `REF-${Date.now()}`;
-  const weight = 1.0;
-
-  try {
-    const response = await fetch('http://localhost:3000/api/products', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ productName, value, img, idCategory, active, reference, weight })
-    });
-
-    const data = await response.json();
-    console.log('Resposta da API ao criar produto:', data);
-
-    if (response.ok) {
-      alert('Produto adicionado com sucesso!');
-      newProductNameInput.value = '';
-      newProductValueInput.value = '';
-      newProductImageInput.value = '';
-      fetchProducts();
-    } else {
-      throw new Error('Erro ao adicionar o produto');
+      const newProductNameInput = document.getElementById('newProductName');
+      const newProductValueInput = document.getElementById('newProductValue');
+      const newProductImageInput = document.getElementById('newProductImage');
+      const productName = newProductNameInput.value.trim();
+      const valueStr = newProductValueInput.value.trim().replace(',', '.');
+      const value = parseFloat(valueStr);
+      const img = newProductImageInput.value.trim();
+      if (!productName || isNaN(value)) {
+        alert('Por favor, insira um nome válido e um preço numérico.');
+        return;
+      }
+      const idCategory = 1; 
+      const active = true;
+      const reference = `REF-${Date.now()}`;
+      const weight = 1.0;
+      try {
+        const response = await fetch('http://localhost:3000/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productName, value, img, idCategory, active, reference, weight })
+        });
+        const data = await response.json();
+        console.log('Resposta da API ao criar produto:', data);
+        if (response.ok) {
+          alert('Produto adicionado com sucesso!');
+          newProductNameInput.value = '';
+          newProductValueInput.value = '';
+          newProductImageInput.value = '';
+          fetchProducts();
+        } else {
+          throw new Error('Erro ao adicionar o produto');
+        }
+      } catch (error) {
+        console.error('Erro ao criar produto:', error);
+        alert('Erro ao adicionar o produto. Verifique a console para mais detalhes.');
+      }
     }
-  } catch (error) {
-    console.error('Erro ao criar produto:', error);
-    alert('Erro ao adicionar o produto. Verifique a console para mais detalhes.');
-  }
-}
 
     // Função para atualizar (editar) um produto
     async function updateProduct(productId, newName, newValue, newImg) {
       if (!newName || isNaN(newValue)) {
-        alert('O nome e o preço do produto não podem ser vazios');  
+        alert('O nome e o preço do produto não podem ser vazios');
         return;
       }
       try {
         const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
           method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ productName: newName, value: newValue, img: newImg })
         });
         if (!response.ok) {
@@ -505,9 +483,7 @@
       try {
         const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
           method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Content-Type': 'application/json' }
         });
         if (!response.ok) {
           throw new Error('Erro ao remover produto');
@@ -520,10 +496,23 @@
       }
     }
 
-    // Chama as funções de busca quando a página carrega
+    // Após o DOM estar carregado, chama as funções de busca e adiciona o event delegation para os botões de encomendas
     document.addEventListener('DOMContentLoaded', () => {
       fetchOrders();
       fetchProducts();
+      
+      // Event delegation para os botões de confirmar e cancelar
+      document.getElementById('ordersTableBody').addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        if (btn.classList.contains('confirm-btn')) {
+          const orderId = btn.dataset.id;
+          changeOrderStatus(orderId, 'Confirmada');
+        } else if (btn.classList.contains('cancel-btn')) {
+          const orderId = btn.dataset.id;
+          changeOrderStatus(orderId, 'Cancelada');
+        }
+      });
     });
 
     // Função de logout

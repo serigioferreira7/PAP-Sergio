@@ -12,7 +12,6 @@ const { Administrator } = require('./models/administrator');
 const productRoutes = require('./routes/product');
 const orderRoutes = require('./routes/orders');
 const adminRoutes = require('./routes/administrator');
-const authRoutes = require('./routes/authroutes');
 const Order = require('./models/orders'); 
 
 const app = express();
@@ -30,7 +29,7 @@ sequelize.authenticate()
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
-app.use(authRoutes);
+
 
 // Rotas para páginas HTML
 app.get('/products.html', (req, res) => {
@@ -98,7 +97,7 @@ app.post('/api/admin/login', async (req, res) => {
       return res.status(400).json({ error: 'Nome de usuário e senha são obrigatórios' });
     }
 
-    // Lógica de autenticação (substitua com a autenticação real)
+
     const admin = await Administrator.findOne({ where: { "name": name } });
 
     if (!admin || admin.pass !== pass) {
@@ -111,7 +110,7 @@ app.post('/api/admin/login', async (req, res) => {
     console.error('Erro interno no servidor:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
-  //res.status(500).json({ error: 'Ehahahahah' });
+
 });
 
 
@@ -124,14 +123,14 @@ app.post('/api/orders', async (req, res) => {
       return res.status(400).json({ error: 'Nome do cliente, produtos e valor total são obrigatórios.' });
     }
 
-    // Certifique-se de que o modelo Order foi importado corretamente
+
     const Order = require('./models/order'); 
 
     const order = await Order.create({
       customerName,
       products,     // Produtos no formato de string ou JSON
       totalPrice,
-      status: 'Pendente', // Status default 'Pendente'
+      status: 'Pendente', // Estado default 'Pendente'
       orderDate: new Date()         // A data de criação é gerada automaticamente
     });
 
@@ -148,7 +147,7 @@ app.post('/api/orders', async (req, res) => {
 // Rota para obter todas as encomendas
 app.get('/api/orders', async (req, res) => {
   try {
-    const orders = await Order.findAll(); // Método que busca todas as encomendas
+    const orders = await Order.findAll(); // Método que vai buscar todas as encomendas
     if (!orders || orders.length === 0) {
       return res.status(404).json({ success: false, message: 'Nenhuma encomenda encontrada' });
     }
@@ -159,29 +158,28 @@ app.get('/api/orders', async (req, res) => {
   }
 });
 
-app.patch('/api/orders/:orderId/status', async (req, res) => {
+app.put('/api/orders/:id/status', async (req, res) => {
   try {
-    const { ordersId } = req.params;
-    const { status } = req.body;
+    const orderId = req.params.id;
+    const newStatus = req.body.status;
 
-    
-    if (!['Confirmado', 'Cancelado'].includes(status)) {
-      return res.status(400).json({ error: 'Estado inválido' });
+    console.log(`A receber pedido para alterar ordem ${orderId} para status ${newStatus}`);
+
+    // Busca a ordem com o Sequelize
+    const order = await Order.findByPk(orderId);
+
+    if (!order) {
+      return res.status(404).json({ error: "Encomenda não encontrada" });
     }
 
-    // Atualiza o status da encomenda
-    const orders = await Order.findByPk(ordersId);
-    if (!orders) {
-      return res.status(404).json({ error: 'Encomenda não encontrada' });
-    }
+    // Atualiza o status e salva
+    order.status = newStatus;
+    await order.save();
 
-    orders.status = status;
-    await orders.save();
-
-    res.json({ success: true });
+    res.json({ message: "Estado atualizado com sucesso!", order });
   } catch (error) {
-    console.error('Erro ao atualizar estado da encomenda:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error("Erro ao atualizar estado:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 });
 
@@ -189,7 +187,7 @@ app.patch('/api/orders/:orderId/status', async (req, res) => {
 
 sequelize.authenticate()
   .then(() => {
-    console.log('Conexão com o banco de dados bem-sucedida!');
+    console.log('Conexão com a base de dados bem-sucedida!');
     
     sequelize.sync({ force: false }) 
       .then(() => {
@@ -198,7 +196,7 @@ sequelize.authenticate()
       .catch(err => console.error('Erro ao sincronizar as tabelas:', err));
   })
   .catch(err => {
-    console.error('Erro ao conectar ao banco:', err);
+    console.error('Erro ao conectar a base de dados:', err);
   });
 
 const PORT = 3000;

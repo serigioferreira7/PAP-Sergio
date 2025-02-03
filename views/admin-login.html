@@ -102,7 +102,7 @@
 
         <form id="adminLoginForm">
             <div class="mb-3">
-                <label for="name" class="form-label">Nome Admin</label>
+                <label for="name" class="form-label">Admin</label>
                 <input type="text" class="form-control" id="name" name="name" required>
             </div>
             <div class="mb-3">
@@ -137,7 +137,7 @@
         document.getElementById('spinner').style.display = 'block';
         
         if (!name || !pass) {
-            document.getElementById("errorMessage").textContent = "Nome de usuário e pass são obrigatórios";
+            document.getElementById("errorMessage").textContent = "Nome de utilizador e pass são obrigatórios";
             document.getElementById("errorMessage").style.display = 'block';
             document.getElementById('spinner').style.display = 'none'; 
             return;

@@ -1,5 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../db');  // Caminho correto para sua instância do Sequelize
+const sequelize = require('../db');  
 
 const Administrator = sequelize.define('Administrator', {
   name: {  

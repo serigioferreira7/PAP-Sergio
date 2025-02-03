@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Order = require('../models/orders'); // Certifique-se de que o caminho do modelo está correto
+const Order = require('../models/orders'); 
 
 // Rota para criação de uma nova encomenda
 router.post('/', async (req, res) => {
@@ -15,8 +15,8 @@ router.post('/', async (req, res) => {
       customerName,
       products,
       totalPrice,
-      status: status || 'Pendente', // Default status
-      orderDate: new Date()          // Data da encomenda
+      status: status || 'Pendente',
+      orderDate: new Date()          
     });
 
     return res.status(201).json({
@@ -29,13 +29,13 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Rota para atualizar o status de uma encomenda existente
+// Rota para atualizar o estado de uma encomenda existente
 router.put('/:orderId', async (req, res) => {
   try {
     const { ordersId } = req.params;
     const { status } = req.body;
 
-    // Verifique se o status foi fornecido
+    // Verifique se o estado foi fornecido
     if (!status) {
       return res.status(400).json({ error: 'O status é obrigatório para atualizar.' });
     }
@@ -48,7 +48,7 @@ router.put('/:orderId', async (req, res) => {
       return res.status(404).json({ error: 'Encomenda não encontrada.' });
     }
 
-    // Atualiza o status
+    // Atualiza o estado
     orders.status = status;
     const updatedOrder = await order.save();  // Salva a encomenda com o novo status
 

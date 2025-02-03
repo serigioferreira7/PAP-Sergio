@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quick Order - Confirmação</title>
     <style>
-        /* Estilos principais */
         body {
             font-family: system-ui, -apple-system, sans-serif;
             margin: 0;
@@ -114,7 +113,6 @@
             box-shadow: 0 4px 12px rgba(56, 178, 172, 0.2);
         }
 
-        /* Responsividade */
         @media (max-width: 768px) {
             .main-content {
                 padding: 0 1rem;
@@ -164,7 +162,7 @@
             const thankYouMessage = document.getElementById('thank-you-message');
 
             // Verifica se os dados estão no formato correto
-            if (orderDetails && orderDetails.orders) {  // Alterado de "order" para "orders"
+            if (orderDetails && orderDetails.orders) { 
                 const { customerName, orders } = orderDetails;
                 
                 // Exibe a mensagem de agradecimento
@@ -175,7 +173,7 @@
                 }
 
                 // Exibe detalhes dos produtos
-                orders.products.forEach(product => {  // Alterado de "order" para "orders"
+                orders.products.forEach(product => {  
                     const detailRow = document.createElement('div');
                     detailRow.className = 'detail-row';
                     detailRow.innerHTML = `

@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quick Order</title>
   <style>
-    /* Variáveis de cores para facilitar a manutenção */
     :root {
       --bg-primary: #2F4858;
       --bg-secondary: #1F2E3D;
@@ -77,6 +76,17 @@
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     }
 
+    .home-button {
+      background-color: var(--button-login);
+      color: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .home-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
     main.main-content {
       max-width: 1200px;
       margin: 2rem auto;
@@ -103,7 +113,7 @@
 
     .customer-section {
       margin-bottom: 1.5rem;
-    } 
+    }
 
     label[for="customerName"] {
       display: block;
@@ -255,6 +265,7 @@
       <a href="/" class="logo">Quick Order</a>
       <div class="nav-buttons">
         <a href="/products.html" class="nav-button products-button">Ver Produtos</a>
+        <a href="/home.html" class="nav-button home-button">Página Inicial</a>
       </div>
     </div>
   </header>
@@ -262,8 +273,6 @@
   <main class="main-content">
     <div class="order-section">
       <h2 class="order-title">Escolha os produtos</h2>
-      
-      <!-- Campo para o nome do cliente -->
       <div class="customer-section">
         <label for="customerName">Nome do Cliente</label>
         <input type="text" id="customerName" placeholder="Digite seu nome" required>
@@ -309,7 +318,7 @@
           const li = document.createElement('li');
           li.className = 'product-item';
 
-          // Criando o elemento de imagem
+          
           const img = document.createElement('img');
           img.className = 'product-image';
           img.src = product.img; 
