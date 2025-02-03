@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      order
+      orders
     });
   } catch (error) {
     console.error('Erro ao criar a encomenda:', error);
