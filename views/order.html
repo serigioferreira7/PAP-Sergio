@@ -3,202 +3,344 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Realizar Encomenda</title>
+  <title>Quick Order</title>
   <style>
+    /* Variáveis de cores para facilitar a manutenção */
+    :root {
+      --bg-primary: #2F4858;
+      --bg-secondary: #1F2E3D;
+      --accent: #4fd1c5;
+      --button-prod: #466D86;
+      --button-login: #6B4A59;
+      --white-opacity: rgba(255, 255, 255, 0.9);
+      --input-bg: rgba(255, 255, 255, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f4f4f9;
-    }
-
-    .header {
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      color: var(--white-opacity);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      background-color: #5636d3;
-      padding: 20px;
-      color: white;
     }
 
-    .header-title {
-      font-size: 2rem;
-      margin-bottom: 10px;
+    header.header {
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 1rem 2rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
-    .header-nav {
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
       display: flex;
-      gap: 15px;
-      margin-top: 10px;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .header-nav a {
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--white-opacity);
       text-decoration: none;
-      padding: 10px 20px;
-      font-weight: bold;
-      font-size: 1rem;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .nav-button {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .products-button {
+      background-color: var(--button-prod);
       color: white;
-      border-radius: 20px;
-      background: linear-gradient(90deg, #007bff, #8a52ff);
-      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
 
-    .header-nav a:hover {
-      transform: scale(1.1);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    .products-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     }
 
-    .order-container {
-      margin: 20px auto;
-      width: 90%;
-      max-width: 700px;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    main.main-content {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      flex: 1;
     }
 
-    .order-container h2 {
+    .order-section {
+      background-color: rgba(0, 0, 0, 0.25);
+      padding: 2rem;
+      border-radius: 1rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    }
+
+    .order-title {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: var(--white-opacity);
       text-align: center;
-      color: #333;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 0.5rem;
+    }
+
+    .customer-section {
+      margin-bottom: 1.5rem;
+    } 
+
+    label[for="customerName"] {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    #customerName {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      font-size: 1rem;
+      outline: none;
+      background: var(--input-bg);
+      color: white;
+      transition: 0.3s ease-in-out;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      font-weight: 500;
+    }
+
+    #customerName::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+      font-style: italic;
+    }
+
+    #customerName:focus {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+      transform: scale(1.03);
     }
 
     .product-list {
-      list-style-type: none;
+      list-style: none;
       padding: 0;
+      margin: 1.5rem 0;
+      max-height: 300px;
+      overflow-y: auto;
     }
 
-    .product-list li {
+    .product-item {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid #ddd;
+      align-items: center;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      transition: background 0.3s ease;
     }
 
-    .product-list label {
-      flex-grow: 1;
+    .product-item:hover {
+      background-color: rgba(255, 255, 255, 0.15);
     }
 
-    .form-group {
-      margin-top: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .form-group input, .form-group button {
-      width: 100%;
-      padding: 10px;
+    .product-label {
       font-size: 1rem;
-      border: 1px solid #ddd;
+      color: var(--white-opacity);
+      flex: 1;
+    }
+
+    .product-image {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
       border-radius: 5px;
+      margin-right: 1rem;
+      border: 2px solid rgba(255, 255, 255, 0.3);
     }
 
-    .form-group button {
-      font-weight: bold;
-      color: white;
-      background-color: #5636d3;
-      border: none;
+    .product-checkbox {
+      width: 1.25rem;
+      height: 1.25rem;
+      accent-color: var(--accent);
       cursor: pointer;
-      transition: background-color 0.3s;
+      margin-left: 1rem;
     }
 
-    .form-group button:hover {
-      background-color: #6c42f5;
-    }
-
-    .total-container {
+    .total-section {
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
       text-align: center;
-      margin-top: 20px;
-      font-size: 1.2rem;
-      color: #333;
+      font-size: 1.1rem;
     }
 
-    .total-container span {
-      font-weight: bold;
-      color: #007bff;
+    .total-amount {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .confirm-button {
+      display: block;
+      width: 100%;
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--bg-primary) 100%);
+      color: white;
+      border: none;
+      border-radius: 1rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.2);
+      text-transform: uppercase;
+    }
+
+    .confirm-button:hover {
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--accent) 100%);
+      transform: scale(1.05);
+      box-shadow: 0px 8px 18px rgba(0, 0, 0, 0.3);
+    }
+
+    .confirm-button:active {
+      transform: scale(0.98);
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      .nav-container {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .nav-buttons {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .nav-button {
+        width: 100%;
+        text-align: center;
+      }
+
+      .order-title {
+        font-size: 2rem;
+      }
     }
   </style>
 </head>
 <body>
   <header class="header">
-    <h1 class="header-title">Realizar Encomenda</h1>
-    <nav class="header-nav">
-      <a href="/index.html">Página Inicial</a>
-      <a href="/products.html">Ver Produtos</a>
-    </nav>
+    <div class="nav-container">
+      <a href="/" class="logo">Quick Order</a>
+      <div class="nav-buttons">
+        <a href="/products.html" class="nav-button products-button">Ver Produtos</a>
+      </div>
+    </div>
   </header>
-  <div class="order-container">
-    <h2>Escolha seus Produtos</h2>
-    <ul id="product-list" class="product-list">
-      <li>Carregando produtos...</li>
-    </ul>
-    <div class="total-container">
-      Valor Total: €<span id="total-value">0.00</span>
+
+  <main class="main-content">
+    <div class="order-section">
+      <h2 class="order-title">Escolha os produtos</h2>
+      
+      <!-- Campo para o nome do cliente -->
+      <div class="customer-section">
+        <label for="customerName">Nome do Cliente</label>
+        <input type="text" id="customerName" placeholder="Digite seu nome" required>
+      </div>
+
+      <ul id="product-list" class="product-list">
+        <li class="product-item">Carregando produtos...</li>
+      </ul>
+
+      <div class="total-section">
+        Valor Total: €<span id="total-value" class="total-amount">0.00</span>
+      </div>
+
+      <button id="confirm-order" class="confirm-button">Confirmar Encomenda</button>
     </div>
-    <div class="form-group">
-      <label for="delivery-date">Data de Entrega</label>
-      <input type="date" id="delivery-date" required>
-    </div>
-    <div class="form-group">
-      <button id="confirm-order">Confirmar Encomenda</button>
-    </div>
-  </div>
+  </main>
 
   <script>
     let productsData = [];
     const productList = document.getElementById('product-list');
     const totalValueSpan = document.getElementById('total-value');
+    const customerNameInput = document.getElementById('customerName');
 
-    // Carregar os produtos
+    // Função para carregar os produtos da API
     async function loadProducts() {
-  try {
-    const response = await fetch('/api/products');
-    if (!response.ok) {
-      throw new Error('Erro ao carregar produtos.');
+      try {
+        const response = await fetch('/api/products');
+        if (!response.ok) {
+          throw new Error('Erro ao carregar produtos.');
+        }
+
+        const jsonData = await response.json();
+        console.log("Dados dos produtos recebidos:", jsonData);
+
+        if (!Array.isArray(jsonData)) {
+          throw new Error('Formato de dados inválido. Esperado um array.');
+        }
+
+        productsData = jsonData;
+
+        productList.innerHTML = '';
+        productsData.forEach(product => {
+          const li = document.createElement('li');
+          li.className = 'product-item';
+
+          // Criando o elemento de imagem
+          const img = document.createElement('img');
+          img.className = 'product-image';
+          img.src = product.img; 
+          img.alt = product.productName;
+
+          const label = document.createElement('label');
+          label.className = 'product-label';
+          label.textContent = `${product.productName} - €${product.value}`;
+
+          const checkbox = document.createElement('input');
+          checkbox.className = 'product-checkbox';
+          checkbox.type = 'checkbox';
+          checkbox.value = product.value;
+          checkbox.setAttribute('data-id', product.id);
+          checkbox.addEventListener('change', updateTotalValue);
+
+          li.appendChild(img);  // Adiciona a imagem
+          li.appendChild(label);
+          li.appendChild(checkbox);
+          productList.appendChild(li);
+        });
+
+      } catch (error) {
+        console.error("Erro ao carregar produtos:", error);
+        productList.innerHTML = '<li class="product-item">Erro ao carregar produtos. Tente novamente mais tarde.</li>';
+      }
     }
 
-    productsData = await response.json();
-    console.log("Dados dos produtos recebidos:", productsData); 
-
-
-    if (!Array.isArray(productsData)) {
-      throw new Error('Formato de dados inválido. Esperado um array.');
-    }
-
-    productList.innerHTML = '';
-    productsData.forEach(product => {
-      console.log("Produto a ser processado:", product); // Debug: Produto atual
-
-      const li = document.createElement('li');
-      const label = document.createElement('label');
-      label.textContent = `${product.productName} - €${product.value}`;
-
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.value = product.value;
-      checkbox.setAttribute('data-id', product.id); // Guarda o ID no data-id
-      checkbox.addEventListener('change', updateTotalValue);
-
-      li.appendChild(label);
-      li.appendChild(checkbox);
-      productList.appendChild(li);
-    });
-
-  } catch (error) {
-    console.error("Erro ao carregar produtos:", error);
-    productList.innerHTML = '<li>Erro ao carregar produtos. Tente novamente mais tarde.</li>';
-  }
-}
-
-
-    // Atualizar o valor total
+    // Função para atualizar o valor total com base nos produtos selecionados
     function updateTotalValue() {
-      const selectedCheckboxes = document.querySelectorAll('.product-list input:checked');
+      const selectedCheckboxes = document.querySelectorAll('.product-checkbox:checked');
       let totalValue = 0;
       selectedCheckboxes.forEach(checkbox => {
         totalValue += parseFloat(checkbox.value);
@@ -206,24 +348,33 @@
       totalValueSpan.textContent = totalValue.toFixed(2);
     }
 
-    // Confirmar encomenda
+    // Enviar o pedido de encomenda ao clicar no botão
     document.getElementById('confirm-order').addEventListener('click', async () => {
-      const selectedProducts = Array.from(document.querySelectorAll('.product-list input:checked')).map(checkbox => ({
-        id: parseInt(checkbox.getAttribute('data-id')), // Captura o ID do data-id
-        value: parseFloat(checkbox.value),
-      }));
-      const deliveryDate = document.getElementById('delivery-date').value;
-
-      if (selectedProducts.length === 0 || !deliveryDate) {
-        alert('Por favor, selecione pelo menos um produto e uma data de entrega.');
+      const customerName = document.getElementById('customerName').value;
+      if (!customerName) {
+        alert('Por favor, forneça o nome do cliente.');
         return;
       }
 
+      const selectedProducts = Array.from(document.querySelectorAll('.product-checkbox:checked')).map(checkbox => ({
+        id: parseInt(checkbox.getAttribute('data-id')),
+        value: parseFloat(checkbox.value),
+        productName: checkbox.parentNode.querySelector('.product-label').textContent
+      }));
+
+      if (selectedProducts.length === 0) {
+        alert('Por favor, selecione pelo menos um produto.');
+        return;
+      }
+
+      // Calcular o valor total da encomenda
+      const totalPrice = selectedProducts.reduce((total, product) => total + product.value, 0);
+
       try {
-        const response = await fetch('/api/orders', {
+        const response = await fetch('http://localhost:3000/api/orders', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ products: selectedProducts, deliveryDate }),
+          body: JSON.stringify({ customerName, products: selectedProducts, totalPrice })
         });
 
         if (!response.ok) {
@@ -234,8 +385,8 @@
         localStorage.setItem('orderConfirmation', JSON.stringify(orderDetails));
         window.location.href = '/order-confirmation.html';
       } catch (error) {
+        console.error('Erro ao criar a encomenda:', error);
         alert('Erro ao realizar a encomenda. Tente novamente.');
-        console.error(error);
       }
     });
 

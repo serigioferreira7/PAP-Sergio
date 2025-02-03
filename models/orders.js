@@ -1,14 +1,29 @@
-module.exports = (sequelize, DataTypes) => {
-    const Order = sequelize.define('Order', {
-      id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-      deliveryDate: { type: DataTypes.DATE, allowNull: false },
-      createdAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
-    });
-  
-    Order.associate = (models) => {
-      Order.hasMany(models.OrderItem, { as: 'products' });
-    };
-  
-    return Order;
-  };
-  
+const { DataTypes } = require('sequelize');
+const sequelize = require('../db');  // Certifique-se de que o caminho está correto
+
+const Order = sequelize.define('Order', {
+  customerName: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  totalPrice: {
+    type: DataTypes.FLOAT,
+    allowNull: false
+  },
+  status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'pendente'
+  },
+  products: {
+    type: DataTypes.JSON,  
+    allowNull: false
+  },
+  orderDate: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  }
+});
+
+module.exports = Order;

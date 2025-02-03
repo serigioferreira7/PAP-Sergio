@@ -3,66 +3,196 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirmação da Encomenda</title>
+  <title>Quick Order - Confirmação</title>
   <style>
+    :root {
+      --bg-color: #1a2533;
+      --header-bg: #1f2937;
+      --card-bg: #2d3748;
+      --card-inner: #3d4756;
+      --accent: #38b2ac;
+      --accent-hover: #319795;
+      --text-color: #ffffff;
+      --shadow-light: rgba(0, 0, 0, 0.1);
+      --shadow-medium: rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-      background-color: #f4f4f9;
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
-    .container {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      display: inline-block;
+    header {
+      background-color: var(--header-bg);
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 10px var(--shadow-medium);
     }
 
-    h1 {
-      color: #333;
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    p {
-      font-size: 1.2rem;
-      color: #555;
-    }
-
-    a {
-      display: inline-block;
-      margin-top: 20px;
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-color);
       text-decoration: none;
-      padding: 10px 20px;
-      color: white;
-      background-color: #5636d3;
-      border-radius: 5px;
-      transition: background-color 0.3s;
     }
 
-    a:hover {
-      background-color: #6c42f5;
+    .main-content {
+      max-width: 800px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      flex: 1;
+    }
+
+    .confirmation-section {
+      background-color: var(--card-bg);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px var(--shadow-light);
+    }
+
+    .confirmation-title {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+      text-align: center;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 0.5rem;
+    }
+
+    .thank-you-message {
+      font-size: 1.2rem;
+      margin: 1rem 0 2rem;
+      text-align: center;
+    }
+
+    .order-details {
+      background-color: var(--card-inner);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #4a5568;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 0;
+      margin-top: 1rem;
+      border-top: 2px solid var(--accent);
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .back-button {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1.5rem;
+      background-color: var(--accent);
+      color: var(--text-color);
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .back-button:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(56, 178, 172, 0.2);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Encomenda Confirmada!</h1>
-    <p id="order-details"></p>
-    <a href="/index.html">Voltar à Página Inicial</a>
-  </div>
+  <header>
+    <div class="nav-container">
+      <a href="/" class="logo">Quick Order</a>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="confirmation-section">
+      <h2 class="confirmation-title">Pedido Confirmado!</h2>
+      <!-- Mensagem personalizada de agradecimento -->
+      <p id="thank-you-message" class="thank-you-message"></p>
+
+      <div id="order-details" class="order-details">
+        <div id="products-list"></div>
+        <div id="order-total" class="total-row"></div>
+      </div>
+      <a href="/" class="back-button">Voltar para a Página Inicial</a>
+    </div>
+  </main>
 
   <script>
-    const orderDetails = JSON.parse(localStorage.getItem('orderConfirmation'));
+    document.addEventListener('DOMContentLoaded', () => {
+      const orderDetails = JSON.parse(localStorage.getItem('orderConfirmation'));
+      const productsList = document.getElementById('products-list');
+      const orderTotal = document.getElementById('order-total');
+      const thankYouMessage = document.getElementById('thank-you-message');
 
-    if (orderDetails) {
-      document.getElementById('order-details').innerText = `
-        Valor Total: €${orderDetails.totalValue}\n
-        Data de Entrega: ${orderDetails.deliveryDate}
-      `;
-    } else {
-      document.getElementById('order-details').innerText = 'Nenhuma encomenda encontrada.';
-    }
+      if (orderDetails && orderDetails.order) {
+        const { order } = orderDetails;
+
+        // Exibir mensagem personalizada utilizando o nome do cliente (se disponível)
+        if (order.customerName) {
+          thankYouMessage.textContent = `Obrigado, ${order.customerName}, pela sua compra! Em breve, sua encomenda chegará.`;
+        } else {
+          thankYouMessage.textContent = 'Obrigado pela sua compra! Em breve, sua encomenda chegará.';
+        }
+
+        // Exibir detalhes dos produtos
+        order.products.forEach(product => {
+          const detailRow = document.createElement('div');
+          detailRow.className = 'detail-row';
+          detailRow.innerHTML = `
+            <span>Produto #${product.id}</span>
+            <span>€${product.value.toFixed(2)}</span>
+          `;
+          productsList.appendChild(detailRow);
+        });
+
+        // Exibir total do pedido
+        orderTotal.innerHTML = `
+          <span>Total:</span>
+          <span>€${order.total.toFixed(2)}</span>
+        `;
+      } else {
+        productsList.innerHTML = '<p>Erro ao carregar os detalhes do pedido.</p>';
+      }
+    });
   </script>
 </body>
 </html>
