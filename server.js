@@ -61,6 +61,34 @@ app.get('/admin-login.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'admin-login.html'));
 });
 
+app.post('/api/products', async (req, res) => {
+  console.log("Dados recebidos no backend:", req.body); 
+
+  try {
+      const { productName, value, img, idCategory, active, reference, weight } = req.body;
+
+      if (!productName || !value || !idCategory || !reference || weight === undefined) {
+          return res.status(400).json({ error: 'Todos os campos obrigatórios devem ser preenchidos.' });
+      }
+
+      const newProduct = await Product.create({
+          productName,
+          value,
+          img,
+          idCategory,
+          active,
+          reference,
+          weight
+      });
+
+      res.json({ success: true, product: newProduct });
+  } catch (error) {
+      console.error("Erro ao criar produto:", error);
+      res.status(500).json({ error: 'Erro ao criar produto' });
+  }
+});
+
+
 app.post('/api/admin/login', async (req, res) => {
   try {
     const { name, pass } = req.body;
@@ -133,7 +161,7 @@ app.get('/api/orders', async (req, res) => {
 
 app.patch('/api/orders/:orderId/status', async (req, res) => {
   try {
-    const { orderId } = req.params;
+    const { ordersId } = req.params;
     const { status } = req.body;
 
     
@@ -142,13 +170,13 @@ app.patch('/api/orders/:orderId/status', async (req, res) => {
     }
 
     // Atualiza o status da encomenda
-    const order = await Order.findByPk(orderId);
-    if (!order) {
+    const orders = await Order.findByPk(ordersId);
+    if (!orders) {
       return res.status(404).json({ error: 'Encomenda não encontrada' });
     }
 
-    order.status = status;
-    await order.save();
+    orders.status = status;
+    await orders.save();
 
     res.json({ success: true });
   } catch (error) {

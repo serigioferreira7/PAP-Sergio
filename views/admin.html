@@ -1,541 +1,541 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quick Order - Admin</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            min-height: 100vh;
-            background: #0F2027;
-            background: linear-gradient(to right, #2C5364, #203A43, #0F2027);
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .navbar {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1rem 0;
-        }
-
-        .navbar-brand {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #ffffff !important;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .nav-link {
-            color: #ffffff !important;
-            font-weight: 500;
-        }
-
-        .admin-container {
-            flex: 1;
-            padding: 2rem;
-            color: #ffffff;
-        }
-
-        .orders-table,
-        .products-table {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin-top: 2rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .table {
-            color: #ffffff;
-            border-collapse: separate;
-            border-spacing: 0 1rem;
-        }
-
-        .table th {
-            border-color: rgba(255, 255, 255, 0.2);
-            background: rgba(0, 0, 0, 0.1);
-            font-size: 1.1rem;
-            text-align: center;
-            padding: 1rem;
-            border-radius: 10px;
-            color: #f8f9fa;
-        }
-
-        .table td {
-            border-color: rgba(255, 255, 255, 0.1);
-            padding: 1rem;
-            text-align: center;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.05);
-            color: #f8f9fa;
-        }
-
-        .status-badge {
-            padding: 0.4rem 0.8rem;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .status-pending {
-            background: rgba(255, 193, 7, 0.2);
-            border: 1px solid rgba(255, 193, 7, 0.3);
-            color: #f39c12;
-        }
-
-        .status-confirmed {
-            background: rgba(40, 167, 69, 0.2);
-            border: 1px solid rgba(40, 167, 69, 0.3);
-            color: #28a745;
-        }
-
-        .status-cancelled {
-            background: rgba(220, 53, 69, 0.2);
-            border: 1px solid rgba(220, 53, 69, 0.3);
-            color: #dc3545;
-        }
-
-        .action-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .confirm-btn {
-            background: rgba(40, 167, 69, 0.2);
-            border: 1px solid rgba(40, 167, 69, 0.3);
-            color: #ffffff;
-        }
-
-        .confirm-btn:hover {
-            background: rgba(40, 167, 69, 0.3);
-        }
-
-        .cancel-btn {
-            background: rgba(220, 53, 69, 0.2);
-            border: 1px solid rgba(220, 53, 69, 0.3);
-            color: #ffffff;
-        }
-
-        .cancel-btn:hover {
-            background: rgba(220, 53, 69, 0.3);
-        }
-
-        .orders-table tbody tr,
-        .products-table tbody tr {
-            transition: transform 0.3s ease, background-color 0.3s ease;
-        }
-
-        .orders-table tbody tr:hover,
-        .products-table tbody tr:hover {
-            transform: translateY(-5px);
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-title {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            opacity: 0.9;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-        }
-
-        /* Seção de Gestão de Produtos */
-        .products-section {
-            margin-top: 3rem;
-        }
-        .product-form {
-            margin-bottom: 1.5rem;
-        }
-        .product-form input {
-            width: 300px;
-            display: inline-block;
-            margin-right: 0.5rem;
-        }
-        .product-form .btn-product-create {
-            background: #28a745;
-            color: white;
-            border: 1px solid #28a745;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        .product-form .btn-product-create:hover {
-            background: #218838;
-        }
-        .table-product {
-            color: #ffffff;
-            margin-top: 1rem;
-        }
-        .table-product th, .table-product td {
-            text-align: center;
-            vertical-align: middle;
-        }
-        td.product-name {
-            cursor: text;
-        }
-        td.product-value {
-            cursor: text;
-        }
-        @media (max-width: 768px) {
-            .dashboard-stats {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Order - Admin</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      background: #0F2027;
+      background: linear-gradient(to right, #2C5364, #203A43, #0F2027);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+    .navbar {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 0;
+    }
+    .navbar-brand {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #ffffff !important;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    .nav-link {
+      color: #ffffff !important;
+      font-weight: 500;
+    }
+    .admin-container {
+      flex: 1;
+      padding: 2rem;
+      color: #ffffff;
+    }
+    .orders-table,
+    .products-table {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .table {
+      color: #ffffff;
+      border-collapse: separate;
+      border-spacing: 0 1rem;
+    }
+    .table th {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.1);
+      font-size: 1.1rem;
+      text-align: center;
+      padding: 1rem;
+      border-radius: 10px;
+      color: #f8f9fa;
+    }
+    .table td {
+      border-color: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      text-align: center;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.05);
+      color: #f8f9fa;
+    }
+    .status-badge {
+      padding: 0.4rem 0.8rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .status-pendente {
+      background: rgba(255, 193, 7, 0.2);
+      border: 1px solid rgba(255, 193, 7, 0.3);
+      color: #f39c12;
+    }
+    .status-confirmada {
+      background: rgba(40, 167, 69, 0.2);
+      border: 1px solid rgba(40, 167, 69, 0.3);
+      color: #28a745;
+    }
+    .status-cancelada {
+      background: rgba(220, 53, 69, 0.2);
+      border: 1px solid rgba(220, 53, 69, 0.3);
+      color: #dc3545;
+    }
+    .action-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .confirm-btn {
+      background: rgba(40, 167, 69, 0.2);
+      border: 1px solid rgba(40, 167, 69, 0.3);
+      color: #ffffff;
+    }
+    .confirm-btn:hover {
+      background: rgba(40, 167, 69, 0.3);
+    }
+    .cancel-btn {
+      background: rgba(220, 53, 69, 0.2);
+      border: 1px solid rgba(220, 53, 69, 0.3);
+      color: #ffffff;
+    }
+    .cancel-btn:hover {
+      background: rgba(220, 53, 69, 0.3);
+    }
+    .orders-table tbody tr,
+    .products-table tbody tr {
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .orders-table tbody tr:hover,
+    .products-table tbody tr:hover {
+      transform: translateY(-5px);
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .stat-title {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      opacity: 0.9;
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    /* Seção de Gestão de Produtos */
+    .products-section {
+      margin-top: 3rem;
+    }
+    .product-form {
+      margin-bottom: 1.5rem;
+    }
+    .product-form input {
+      width: 300px;
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+    .product-form .btn-product-create {
+      background: #28a745;
+      color: white;
+      border: 1px solid #28a745;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .product-form .btn-product-create:hover {
+      background: #218838;
+    }
+    .table-product {
+      color: #ffffff;
+      margin-top: 1rem;
+    }
+    .table-product th, .table-product td {
+      text-align: center;
+      vertical-align: middle;
+    }
+    td.product-name,
+    td.product-value,
+    td.product-img {
+      cursor: text;
+    }
+    @media (max-width: 768px) {
+      .dashboard-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Verificação de login do admin -->
-    <script>
-      if (localStorage.getItem('adminLogged') !== 'true') {
-        window.location.href = '/admin-login.html';
-      }
-    </script>
+  <!-- Verificação de login do admin -->
+  <script>
+    if (localStorage.getItem('adminLogged') !== 'true') {
+      window.location.href = '/admin-login.html';
+    }
+  </script>
 
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="home.html">Quick Order</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="logout()">
-                            <i class="fas fa-sign-out-alt me-2"></i>Sair
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="home.html">Quick Order</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="logout()">
+              <i class="fas fa-sign-out-alt me-2"></i>Sair
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-    <div class="admin-container container">
-        <h2><i class="fas fa-user-shield me-2"></i>Painel Administrativo</h2>
+  <div class="admin-container container">
+    <h2><i class="fas fa-user-shield me-2"></i>Painel Administrativo</h2>
 
-        <div class="dashboard-stats">
-            <div class="stat-card">
-                <div class="stat-title">Encomendas Pendentes</div>
-                <div class="stat-value" id="pendingOrdersCount">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">Encomendas Hoje</div>
-                <div class="stat-value" id="todayOrdersCount">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">Total de Encomendas</div>
-                <div class="stat-value" id="totalOrdersCount">0</div>
-            </div>
-        </div>
-
-        <div class="orders-table">
-            <h3 class="mb-4">Gestão de Encomendas</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Produtos</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="ordersTableBody">
-                    <!-- As encomendas serão inseridas aqui -->
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Seção de Gestão de Produtos -->
-        <div class="products-section">
-            <h3 class="mb-4">Gestão de Produtos</h3>
-            <!-- Formulário para criar um novo produto -->
-            <div class="product-form">
-                <input type="text" id="newProductName" placeholder="Nome do Produto" class="form-control d-inline-block">
-                <input type="number" id="newProductValue" placeholder="Preço" class="form-control d-inline-block" style="width:150px;">
-                <button class="btn-product-create" id="createProductBtn">
-                    <i class="fas fa-plus"></i> Criar Produto
-                </button>
-            </div>
-            <!-- Tabela de Produtos -->
-            <table class="table table-product table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome do Produto</th>
-                        <th>Preço</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="productsTableBody">
-                    <!-- Produtos serão carregados aqui -->
-                </tbody>
-            </table>
-        </div>
+    <div class="dashboard-stats">
+      <div class="stat-card">
+        <div class="stat-title">Encomendas Pendentes</div>
+        <div class="stat-value" id="pendingOrdersCount">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Encomendas Hoje</div>
+        <div class="stat-value" id="todayOrdersCount">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Total de Encomendas</div>
+        <div class="stat-value" id="totalOrdersCount">0</div>
+      </div>
     </div>
 
-    <script>
-        // Função para buscar as encomendas e exibi-las na tabela
-        async function fetchOrders() {
-            try {
-                const response = await fetch('http://localhost:3000/api/orders');
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar encomendas');
-                }
-                const data = await response.json();
-                const orders = data.orders;
-                const ordersTableBody = document.getElementById('ordersTableBody');
-                const pendingOrdersCount = document.getElementById('pendingOrdersCount');
-                const todayOrdersCount = document.getElementById('todayOrdersCount');
-                const totalOrdersCount = document.getElementById('totalOrdersCount');
-                ordersTableBody.innerHTML = '';
-                let pendingCount = 0;
-                let todayCount = 0;
-                orders.forEach(order => {
-                    const row = document.createElement('tr');
-                    const orderDate = new Date(order.date);
-                    const today = new Date();
-                    const isToday = orderDate.toDateString() === today.toDateString();
-                    if (order.status === 'Pendente') pendingCount++;
-                    if (isToday) todayCount++;
-                    row.innerHTML = `
-                        <td>#${order.id}</td>
-                        <td>${order.products}</td>
-                        <td><span class="status-badge ${order.status.toLowerCase()}">${order.status}</span></td>
-                        <td>
-                            <button class="action-btn confirm-btn" data-id="${order.id}" data-status="Confirmada">
-                                <i class="fas fa-check me-1"></i>Confirmar
-                            </button>
-                            <button class="action-btn cancel-btn" data-id="${order.id}" data-status="Cancelada">
-                                <i class="fas fa-times me-1"></i>Cancelar
-                            </button>
-                        </td>
-                    `;
-                    ordersTableBody.appendChild(row);
-                });
-                pendingOrdersCount.textContent = pendingCount;
-                todayOrdersCount.textContent = todayCount;
-                totalOrdersCount.textContent = orders.length;
-                document.querySelectorAll('.confirm-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const orderId = e.target.closest('button').dataset.id;
-                        changeOrderStatus(orderId, 'Confirmada');
-                    });
-                });
-                document.querySelectorAll('.cancel-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const orderId = e.target.closest('button').dataset.id;
-                        changeOrderStatus(orderId, 'Cancelada');
-                    });
-                });
-            } catch (error) {
-                console.error('Erro ao buscar encomendas:', error);
-            }
-        }
+    <div class="orders-table">
+      <h3 class="mb-4">Gestão de Encomendas</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Produtos</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody">
+          <!-- As encomendas serão inseridas aqui -->
+        </tbody>
+      </table>
+    </div>
 
-        // Função para alterar o estado da encomenda
-        async function changeOrderStatus(orderId, newStatus) {
-            try {
-                const response = await fetch(`http://localhost:3000/api/orders/${orderId}/status`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ status: newStatus })
-                });
-                if (!response.ok) {
-                    throw new Error('Erro ao atualizar estado');
-                }
-                const data = await response.json();
-                if (data.success) {
-                    alert(`Encomenda #${orderId} foi ${newStatus}`);
-                    fetchOrders();
-                } else {
-                    alert('Erro ao atualizar estado da encomenda');
-                }
-            } catch (error) {
-                console.error('Erro ao alterar estado da encomenda:', error);
-            }
-        }
+    <!-- Seção de Gestão de Produtos -->
+    <div class="products-section">
+      <h3 class="mb-4">Gestão de Produtos</h3>
+      <!-- Formulário para criar um novo produto -->
+      <div class="product-form">
+        <input type="text" id="newProductName" placeholder="Nome do Produto" class="form-control d-inline-block">
+        <input type="number" id="newProductValue" placeholder="Preço" class="form-control d-inline-block" style="width:150px;">
+        <input type="text" id="newProductImage" placeholder="URL da Imagem" class="form-control d-inline-block" style="width:300px;">
+        <button class="btn-product-create" id="createProductBtn">
+          <i class="fas fa-plus"></i> Criar Produto
+        </button>
+      </div>
+      <!-- Tabela de Produtos -->
+      <table class="table table-product table-bordered">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome do Produto</th>
+            <th>Preço</th>
+            <th>Imagem (URL)</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="productsTableBody">
+          <!-- Produtos serão carregados aqui -->
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-        // Função para buscar os produtos e exibi-los na tabela
-        async function fetchProducts() {
-            try {
-                const response = await fetch('http://localhost:3000/api/products');
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar produtos');
-                }
-                const data = await response.json();
-                const products = data.products || data;  // Ajuste conforme a resposta da API
-                const productsTableBody = document.getElementById('productsTableBody');
-                productsTableBody.innerHTML = '';
-                products.forEach(product => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>#${product.id}</td>
-                        <td contenteditable="true" class="product-name" data-product-id="${product.id}">${product.productName}</td>
-                        <td contenteditable="true" class="product-value" data-product-id="${product.id}">${parseFloat(product.value).toFixed(2)}</td>
-                        <td>
-                            <button class="action-btn edit-btn" data-product-id="${product.id}">
-                                <i class="fas fa-edit"></i> Salvar
-                            </button>
-                            <button class="action-btn delete-btn" data-product-id="${product.id}">
-                                <i class="fas fa-trash"></i> Remover
-                            </button>
-                        </td>
-                    `;
-                    productsTableBody.appendChild(row);
-                });
-                document.querySelectorAll('.edit-btn').forEach(btn => {
-                    btn.addEventListener('click', async function() {
-                        const productId = this.dataset.productId;
-                        // Seleciona as células editáveis para nome e valor
-                        const tdName = document.querySelector(`td.product-name[data-product-id="${productId}"]`);
-                        const tdValue = document.querySelector(`td.product-value[data-product-id="${productId}"]`);
-                        const newName = tdName.textContent.trim();
-                        const newValue = parseFloat(tdValue.textContent.trim());
-                        await updateProduct(productId, newName, newValue);
-                    });
-                });
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', async function() {
-                        const productId = this.dataset.productId;
-                        await deleteProduct(productId);
-                    });
-                });
-            } catch (error) {
-                console.error('Erro ao buscar produtos:', error);
-            }
+  <script>
+    // Função para buscar as encomendas e exibi-las na tabela
+    async function fetchOrders() {
+      try {
+        const response = await fetch('http://localhost:3000/api/orders');
+        if (!response.ok) {
+          throw new Error('Erro ao buscar encomendas');
         }
-
-        // Função para criar um novo produto
-        async function createProduct() {
-            const newProductNameInput = document.getElementById('newProductName');
-            const newProductValueInput = document.getElementById('newProductValue');
-            const name = newProductNameInput.value.trim();
-            const value = parseFloat(newProductValueInput.value.trim());
-            if (!name || isNaN(value)) {
-                alert('Informe o nome e o preço do produto');
-                return;
-            }
-            try {
-                const response = await fetch('http://localhost:3000/api/products', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ productName: name, value: value })
-                });
-                if (!response.ok) {
-                    throw new Error('Erro ao criar produto');
-                }
-                const data = await response.json();
-                alert('Produto criado com sucesso!');
-                newProductNameInput.value = '';
-                newProductValueInput.value = '';
-                fetchProducts();
-            } catch (error) {
-                console.error('Erro ao criar produto:', error);
-            }
-        }
-
-        // Função para atualizar (editar) um produto
-        async function updateProduct(productId, newName, newValue) {
-            if (!newName || isNaN(newValue)) {
-                alert('O nome e o preço do produto não podem ser vazios');
-                return;
-            }
-            try {
-                const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ productName: newName, value: newValue })
-                });
-                if (!response.ok) {
-                    throw new Error('Erro ao atualizar produto');
-                }
-                const data = await response.json();
-                alert('Produto atualizado com sucesso!');
-                fetchProducts();
-            } catch (error) {
-                console.error('Erro ao atualizar produto:', error);
-            }
-        }
-
-        // Função para remover um produto
-        async function deleteProduct(productId) {
-            if (!confirm('Tem certeza que deseja remover este produto?')) return;
-            try {
-                const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Erro ao remover produto');
-                }
-                const data = await response.json();
-                alert('Produto removido com sucesso!');
-                fetchProducts();
-            } catch (error) {
-                console.error('Erro ao remover produto:', error);
-            }
-        }
-
-        // Chama as funções de busca quando a página carrega
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchOrders();
-            fetchProducts();
+        const data = await response.json();
+        const orders = data.orders;
+        const ordersTableBody = document.getElementById('ordersTableBody');
+        const pendingOrdersCount = document.getElementById('pendingOrdersCount');
+        const todayOrdersCount = document.getElementById('todayOrdersCount');
+        const totalOrdersCount = document.getElementById('totalOrdersCount');
+        ordersTableBody.innerHTML = '';
+        let pendingCount = 0;
+        let todayCount = 0;
+        orders.forEach(order => {
+          const row = document.createElement('tr');
+          const orderDate = new Date(order.date);
+          const today = new Date();
+          const isToday = orderDate.toDateString() === today.toDateString();
+          if (order.status === 'Pendente') pendingCount++;
+          if (isToday) todayCount++;
+          row.innerHTML = `
+            <td>#${order.id}</td>
+            <td>${order.products}</td>
+            <td><span class="status-badge status-${order.status.toLowerCase()}">${order.status}</span></td>
+            <td>
+              <button class="action-btn confirm-btn" data-id="${order.id}" data-status="Confirmada">
+                <i class="fas fa-check me-1"></i>Confirmar
+              </button>
+              <button class="action-btn cancel-btn" data-id="${order.id}" data-status="Cancelada">
+                <i class="fas fa-times me-1"></i>Cancelar
+              </button>
+            </td>
+          `;
+          ordersTableBody.appendChild(row);
         });
+        pendingOrdersCount.textContent = pendingCount;
+        todayOrdersCount.textContent = todayCount;
+        totalOrdersCount.textContent = orders.length;
 
-        // Função de logout
-        function logout() {
-            localStorage.removeItem('adminLogged');
-            window.location.href = 'home.html';
+        // Adiciona os eventos para os botões de confirmar e cancelar
+        document.querySelectorAll('.confirm-btn').forEach(button => {
+          button.addEventListener('click', (e) => {
+            const orderId = e.target.closest('button').dataset.id;
+            changeOrderStatus(orderId, 'Confirmada');
+          });
+        });
+        document.querySelectorAll('.cancel-btn').forEach(button => {
+          button.addEventListener('click', (e) => {
+            const orderId = e.target.closest('button').dataset.id;
+            changeOrderStatus(orderId, 'Cancelada');
+          });
+        });
+      } catch (error) {
+        console.error('Erro ao buscar encomendas:', error);
+      }
+    }
+
+    // Função para alterar o estado da encomenda
+    async function changeOrderStatus(orderId, newStatus) {
+      try {
+        const response = await fetch(`http://localhost:3000/api/orders/${orderId}/status`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (!response.ok) {
+          throw new Error('Erro ao atualizar estado');
         }
+        const data = await response.json();
+        if (data.success) {
+          alert(`Encomenda #${orderId} foi ${newStatus}`);
+          fetchOrders();
+        } else {
+          alert('Erro ao atualizar estado da encomenda');
+        }
+      } catch (error) {
+        console.error('Erro ao alterar estado da encomenda:', error);
+      }
+    }
 
-        // Listener para o botão de criação de produto
-        document.getElementById('createProductBtn').addEventListener('click', createProduct);
-    </script>
+    // Função para buscar os produtos e exibi-los na tabela
+    async function fetchProducts() {
+      try {
+        const response = await fetch('http://localhost:3000/api/products');
+        if (!response.ok) {
+          throw new Error('Erro ao buscar produtos');
+        }
+        const data = await response.json();
+        // Caso a API retorne os produtos dentro de uma propriedade "products"
+        const products = data.products || data;
+        const productsTableBody = document.getElementById('productsTableBody');
+        productsTableBody.innerHTML = '';
+        products.forEach(product => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>#${product.id}</td>
+            <td contenteditable="true" class="product-name" data-product-id="${product.id}">${product.productName}</td>
+            <td contenteditable="true" class="product-value" data-product-id="${product.id}">${parseFloat(product.value).toFixed(2)}</td>
+            <td contenteditable="true" class="product-img" data-product-id="${product.id}">${product.img || ''}</td>
+            <td>
+              <button class="action-btn edit-btn" data-product-id="${product.id}">
+                <i class="fas fa-edit"></i> Salvar
+              </button>
+              <button class="action-btn delete-btn" data-product-id="${product.id}">
+                <i class="fas fa-trash"></i> Remover
+              </button>
+            </td>
+          `;
+          productsTableBody.appendChild(row);
+        });
+        // Eventos para editar produtos
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+          btn.addEventListener('click', async function() {
+            const productId = this.dataset.productId;
+            const tdName = document.querySelector(`td.product-name[data-product-id="${productId}"]`);
+            const tdValue = document.querySelector(`td.product-value[data-product-id="${productId}"]`);
+            const tdImg = document.querySelector(`td.product-img[data-product-id="${productId}"]`);
+            const newName = tdName.textContent.trim();
+            const newValue = parseFloat(tdValue.textContent.trim());
+            const newImg = tdImg.textContent.trim();
+            await updateProduct(productId, newName, newValue, newImg);
+          });
+        });
+        // Eventos para remover produtos
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', async function() {
+            const productId = this.dataset.productId;
+            await deleteProduct(productId);
+          });
+        });
+      } catch (error) {
+        console.error('Erro ao buscar produtos:', error);
+      }
+    }
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    // Função para criar um novo produto com tratamento para valores decimais
+    async function createProduct() {
+  const newProductNameInput = document.getElementById('newProductName');
+  const newProductValueInput = document.getElementById('newProductValue');
+  const newProductImageInput = document.getElementById('newProductImage');
+
+  const productName = newProductNameInput.value.trim();
+  const valueStr = newProductValueInput.value.trim().replace(',', '.');
+  const value = parseFloat(valueStr);
+  const img = newProductImageInput.value.trim();
+
+  if (!productName || isNaN(value)) {
+    alert('Por favor, insira um nome válido e um preço numérico.');
+    return;
+  }
+
+  const idCategory = 1; 
+  const active = true;
+  const reference = `REF-${Date.now()}`;
+  const weight = 1.0;
+
+  try {
+    const response = await fetch('http://localhost:3000/api/products', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ productName, value, img, idCategory, active, reference, weight })
+    });
+
+    const data = await response.json();
+    console.log('Resposta da API ao criar produto:', data);
+
+    if (response.ok) {
+      alert('Produto adicionado com sucesso!');
+      newProductNameInput.value = '';
+      newProductValueInput.value = '';
+      newProductImageInput.value = '';
+      fetchProducts();
+    } else {
+      throw new Error('Erro ao adicionar o produto');
+    }
+  } catch (error) {
+    console.error('Erro ao criar produto:', error);
+    alert('Erro ao adicionar o produto. Verifique a console para mais detalhes.');
+  }
+}
+
+    // Função para atualizar (editar) um produto
+    async function updateProduct(productId, newName, newValue, newImg) {
+      if (!newName || isNaN(newValue)) {
+        alert('O nome e o preço do produto não podem ser vazios');  
+        return;
+      }
+      try {
+        const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ productName: newName, value: newValue, img: newImg })
+        });
+        if (!response.ok) {
+          throw new Error('Erro ao atualizar produto');
+        }
+        const data = await response.json();
+        alert('Produto atualizado com sucesso!');
+        fetchProducts();
+      } catch (error) {
+        console.error('Erro ao atualizar produto:', error);
+      }
+    }
+
+    // Função para remover um produto
+    async function deleteProduct(productId) {
+      if (!confirm('Tem certeza que deseja remover este produto?')) return;
+      try {
+        const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (!response.ok) {
+          throw new Error('Erro ao remover produto');
+        }
+        const data = await response.json();
+        alert('Produto removido com sucesso!');
+        fetchProducts();
+      } catch (error) {
+        console.error('Erro ao remover produto:', error);
+      }
+    }
+
+    // Chama as funções de busca quando a página carrega
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchOrders();
+      fetchProducts();
+    });
+
+    // Função de logout
+    function logout() {
+      localStorage.removeItem('adminLogged');
+      window.location.href = 'home.html';
+    }
+
+    // Evento para criação de produto
+    document.getElementById('createProductBtn').addEventListener('click', createProduct);
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

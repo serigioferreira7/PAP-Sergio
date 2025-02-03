@@ -14,10 +14,12 @@ const Product = sequelize.define('product', {
   active: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    defaultValue: true,
   },
   reference: {
     type: DataTypes.TEXT,
     allowNull: false,
+    unique: true,
   },
   productName: {
     type: DataTypes.STRING(50),
